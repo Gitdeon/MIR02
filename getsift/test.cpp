@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 	FILE * feat1file;
 	FILE * feat2file;
 
-	feat1file=fopen("features1.txt","w+");
+	feat1file=fopen("%s.features1.txt","w+");
 	for(i=0;i<n1;i++)
 	{
 		fprintf(feat1file,"(%lf,%lf): {",(feat1+i)->x,(feat1+i)->y);	
@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
 	}
     printf("coordinate and descriptor of %s keypoints have been written in featfile1.txt\n",argv[1]);
 
-	feat2file=fopen("features2.txt","w+");
+	feat2file=fopen("%s.features2.txt","w+");
 	for(i=0;i<n2;i++)
 	{
 		fprintf(feat2file,"(%lf,%lf): {",(feat2+i)->x,(feat2+i)->y);
@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
 	}
 
 	printf("Found %d total matches\n", m );
-	write_jpeg_file("matches.jpg",stacked1);
+	write_jpeg_file("%s.matches.jpg",stacked1);
 
   
     CvMat* H;
@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
 	}
 
 	printf("Found %d total matches after RANSAC\n", n );
-	write_jpeg_file("matches.ransac.jpg",stacked2);
+	write_jpeg_file("%s.matches.ransac.jpg",stacked2);
 	
        cvReleaseImage( &img1 );
 	cvReleaseImage( &img2 );
