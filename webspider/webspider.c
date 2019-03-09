@@ -365,32 +365,33 @@ int main(int argc, char *argv[])
 
     
     /* Allocate memory for the link (needed bacause we might change it later on) ... */
-    size_t qLen = strlen(argv[1]);
-    char *q = (char *)malloc(URL_BUFFER_SIZE*sizeof(char));
-    strcpy(q, argv[1]);
-    q[qLen] = '\0';
+    size_t linkLen = strlen(argv[1]);
+    char *link = (char *)malloc(URL_BUFFER_SIZE*sizeof(char));
+    strcpy(link, argv[1]);
+    link[linkLen] = '\0';
    
     /*Download webpage at q*/
-    char * webpage = getWebPage(q);
-    char * webLinks = GetLinksFromWebPage(webpage, q);
+    char * webpage = getWebPage(link);
+    char * q = GetLinksFromWebPage(webpage, link);
+    printf("All links without first line p links:\n%s\n", q);
     int iterator = 0;
     while (iterator <= 300) {
        iterator++;
     }
-    int LineSize = strcspn(webLinks, "\n");
+    int LineSize = strcspn(q, "\n");
     char * p = (char *)malloc(URL_BUFFER_SIZE*sizeof(char));
-    p  = strncpy(p, webLinks, LineSize);
-    webLinks = replace_str(webLinks, p, "");
+    p  = strncpy(p, q, LineSize);
+    q = replace_str(q, p, "");
     /*Print everything*/
-    printf("All links:\n%s\n", webLinks);
-    printf("First line:%s", p);
+    printf("All links without first line p links:\n%s\n", q);
+    printf("First line p:%s", p);
     // haut_destroy(&parser);
         
     /* Release the memory allocated for myState */
     /* Release the memory allocated for our data */
     // if(webpage!=NULL) free(webpage);
     // if(webLinks!=NULL) free(webLinks);
-    // free(q); 
+    // free(link); 
 
     return 0;
 }
