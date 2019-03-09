@@ -385,6 +385,23 @@ int main(int argc, char *argv[])
     /*Print everything*/
     printf("All links without first line p links:\n%s\n", q);
     printf("First line p:%s", p);
+   
+    char * h = getWebPage(p);
+    char * newlinks = GetLinksFromWebPage(h,p);
+    printf("All links without first line p links:\n%s\n", newlinks);
+
+    char * temp_q;
+    temp_q = q;
+    if((q = malloc(strlen(temp_q)+strlen(newlinks)+1)) != NULL){
+    	q[0] = '\0';   // ensures the memory is an empty string
+    	strcat(q, temp_q);
+    	strcat(q, newlinks);
+    } 
+    else {
+    	printf("malloc failed!\n");
+    }
+    printf("List: \n %s", q);
+    
     // haut_destroy(&parser);
         
     /* Release the memory allocated for myState */
