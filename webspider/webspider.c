@@ -362,7 +362,6 @@ int main(int argc, char *argv[])
 {   
     /* We need one argument */
     if( argc != 2 ) return 1;
-
     
     /* Allocate memory for the link (needed bacause we might change it later on) ... */
     size_t linkLen = strlen(argv[1]);
@@ -370,27 +369,28 @@ int main(int argc, char *argv[])
     strcpy(link, argv[1]);
     link[linkLen] = '\0';
    
-    /*Download webpage at q*/
+    /*Download webpage at link*/
     char * webpage = getWebPage(link);
     char * q = GetLinksFromWebPage(webpage, link);
-    printf("All links without first line p links:\n%s\n", q);
+    char * h = NULL;
+    char * newlinks = NULL;
+    printf("All links:\n%s\n", q);
     int iterator = 0;
     while (iterator <= 300) {
+       int LineSize = strcspn(q, "\n");
+       char * p = (char *)malloc(URL_BUFFER_SIZE*sizeof(char));
+       p  = strncpy(p, q, LineSize);
+       q = replace_str(q, p, "");
+       // IF q is empty, go to next link in list
+       h = getWebPage(p);
+       newlinks = GetLinksFromWebPage(h,p);
+       printf("All new links:\n%s\n", newlinks);
        iterator++;
     }
-    int LineSize = strcspn(q, "\n");
-    char * p = (char *)malloc(URL_BUFFER_SIZE*sizeof(char));
-    p  = strncpy(p, q, LineSize);
-    q = replace_str(q, p, "");
     /*Print everything*/
-    printf("All links without first line p links:\n%s\n", q);
-    printf("First line p:%s", p);
-   
-    char * h = getWebPage(p);
-    char * newlinks = GetLinksFromWebPage(h,p);
-    printf("All links without first line p links:\n%s\n", newlinks);
 
-    char * temp_q;
+
+    /*char * temp_q;
     temp_q = q;
     if((q = malloc(strlen(temp_q)+strlen(newlinks)+1)) != NULL){
     	q[0] = '\0';   // ensures the memory is an empty string
@@ -400,7 +400,7 @@ int main(int argc, char *argv[])
     else {
     	printf("malloc failed!\n");
     }
-    printf("List: \n %s", q);
+    printf("List: \n %s", q); */
     
     // haut_destroy(&parser);
         
