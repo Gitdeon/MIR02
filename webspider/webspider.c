@@ -154,7 +154,7 @@ write_callback(char *buffer, size_t size, size_t nmemb, state_tp webpageData)
         char* url_ptr;
         curl_easy_getinfo( curl, CURLINFO_EFFECTIVE_URL, &url_ptr );
         strbuffer_append( &(webpageData->base_url), url_ptr, strlen( url_ptr ) );
-        printf("Effective url:\n%s\n", url_ptr);
+        printf("Using url:\n%s\n", url_ptr);
     }
     
     /* the size of the received data */
@@ -342,6 +342,22 @@ char *GetLinksFromWebPage(char *myhtmlpage, char *myUrl){
     return result;
 }
 
+char *replace_str(char *str, char *orig, char *rep)
+{
+  static char buffer[4096];
+  char *p;
+
+  if(!(p = strstr(str, orig)))  // Is 'orig' even in 'str'?
+    return str;
+
+  strncpy(buffer, str, p-str); // Copy characters from 'str' start to 'orig' st$
+  buffer[p-str] = '\0';
+
+  sprintf(buffer+(p-str), "%s%s", rep, p+strlen(orig));
+
+  return buffer;
+}
+
 int main(int argc, char *argv[])
 {   
     /* We need one argument */
@@ -354,26 +370,27 @@ int main(int argc, char *argv[])
     strcpy(q, argv[1]);
     q[qLen] = '\0';
    
-    iterator = 0;
+    /*Download webpage at q*/
+    char * webpage = getWebPage(q);
+    char * webLinks = GetLinksFromWebPage(webpage, q);
+    int iterator = 0;
     while (iterator <= 300) {
        iterator++;
     }
-   
-    /*Download the webpage*/
-    char * webpage = getWebPage(q);
-    char * webLinks = GetLinksFromWebPage(webpage, q)
-    /*Extract links from webpage*/;
-   
+    int LineSize = strcspn(webLinks, "\n");
+    char * p = (char *)malloc(URL_BUFFER_SIZE*sizeof(char));
+    p  = strncpy(p, webLinks, LineSize);
+    webLinks = replace_str(webLinks, p, "");
     /*Print everything*/
-    printf("LINKS:\n%s\n", webLinks);
-   
+    printf("All links:\n%s\n", webLinks);
+    printf("First line:%s", p);
     // haut_destroy(&parser);
         
     /* Release the memory allocated for myState */
     /* Release the memory allocated for our data */
-    if(webpage!=NULL) free(webpage);
-    if(webLinks!=NULL) free(webLinks);
-    free(q);
+    // if(webpage!=NULL) free(webpage);
+    // if(webLinks!=NULL) free(webLinks);
+    // free(q); 
 
     return 0;
 }

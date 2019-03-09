@@ -1,2 +1,2 @@
-htmlprocess:	htmlprocess.c
-		gcc -g -O2 htmlprocess.c -o htmlprocess -Ihaut-html/include -Lhaut-html/lib -lhaut -lcurl 
+webspider:	webspider.c
+	gcc -g -O2 webspider.c -o webspider -Ihaut-html/include -Lhaut-html/lib -lhaut -lcurl 
