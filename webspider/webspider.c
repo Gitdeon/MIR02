@@ -358,8 +358,45 @@ char *replace_str(char *str, char *orig, char *rep)
   return buffer;
 }
 
+typedef struct node {
+    char * web_link;
+    struct node * next;
+} q;
+
+q * insert_node(q* begin, char * link) {
+	q * temp = (q*)malloc(sizeof(q));
+	if (temp == NULL) {
+		printf("Memory could not be allocated for new node\n");
+		exit(-1);
+	}
+	temp -> web_link = link;
+	temp -> next = NULL; 
+	
+	if (begin -> web_link == NULL) begin = temp;
+	else if (begin -> next == NULL) begin -> next == temp;
+	else {
+		q * walker = begin;
+		while (walker -> next != NULL) {
+			if (walker -> next == NULL) walker -> next = temp;
+			walker = walker -> next;
+		}
+	}
+	return begin;
+}
+
+void print_list(q * begin) {
+    q * walker = begin;
+
+    while (walker != NULL) {
+        printf("%s\n", walker->web_link);
+        walker = walker -> next;
+    }
+}
+
 int main(int argc, char *argv[])
 {   
+    typedef struct node q;
+    int LineSize = 0;
     /* We need one argument */
     if( argc != 2 ) return 1;
     
@@ -367,13 +404,6 @@ int main(int argc, char *argv[])
     size_t linkLen = strlen(argv[1]);
     char *link = (char *)malloc(URL_BUFFER_SIZE*sizeof(char));
     strcpy(link, argv[1]);
-    link[linkLen] = '\0';
-    
-    /* Create linked list */
-    typedef struct list {
-    	char * html_page;
-	struct list * next;
-    } q;
 
     q * begin = NULL;
     begin = malloc(sizeof(q));
@@ -381,17 +411,35 @@ int main(int argc, char *argv[])
         return 1;
     }
     
-    begin -> html_page = argv[1];
+    begin -> web_link = argv[1];
     begin -> next = NULL;
     
-    char *p =  begin -> html_page;
-    begin -> html_page = NULL;
+    char *p =  begin -> web_link;
+    begin -> web_link  = NULL;
  
-    printf("htmlpage:\n %s \n", p);
+    printf("link in p:\n %s \n", p);
     
     char * h = getWebPage(p);
     char * newlinks = GetLinksFromWebPage(h, p);
-    printf("htmlpage:\n %s \n", newlinks);
+    printf("links on h:\n%s\n\n", newlinks);
+    
+    int links = 0;
+    int linkSize = 0;
+    char * nextLine = NULL;
+    while(newlinks) {
+      nextLine = strchr(newlinks, '\n');
+      if (nextLine) *nextLine = '\0';  // temporarily terminate the current line
+      //printf("Current Line=[%s]\n\n\n", newlinks);
+      begin = insert_node(begin, newlinks);
+      if (nextLine) *nextLine = '\n';
+      newlinks = nextLine ? (nextLine+1) : NULL;
+   } 
+   print_list(begin); 
+
+
+
+
+
 
     // haut_destroy(&parser);
         
