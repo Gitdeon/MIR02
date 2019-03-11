@@ -358,13 +358,11 @@ char *replace_str(char *str, char *orig, char *rep)
   return buffer;
 }
 
-/* Create linked list struct */
 typedef struct node {
     char * web_link;
     struct node * next;
 } q;
 
-/* Function to insert link at end of linked list */
 q * insert_node(q* begin, char * link) {
 	q * temp = (q*)malloc(sizeof(q));
 	if (temp == NULL) {
@@ -386,15 +384,6 @@ q * insert_node(q* begin, char * link) {
 	return begin;
 }
 
-/* Function to remove the first item in the linked q list */
-void RemoveFirstElement(q **begin) {
-    q *temp = *begin;
-    temp = temp -> next;
-    free(begin);
-    *begin = temp;
-}
-
-/* Function to print linked list to check if it works allright */
 void print_list(q * begin) {
     q * walker = begin;
 
@@ -411,42 +400,41 @@ int main(int argc, char *argv[])
     /* We need one argument */
     if( argc != 2 ) return 1;
     
-     /* Allocate memory for the link as it needs to be changed later on */
+     /* Allocate memory for the link (needed bacause we might change it later on) ... */
     size_t linkLen = strlen(argv[1]);
     char *link = (char *)malloc(URL_BUFFER_SIZE*sizeof(char));
     strcpy(link, argv[1]);
-    
-    /* create head node for linked list and fill with the input link */
+
     q * begin = NULL;
     begin = malloc(sizeof(q));
     if (begin == NULL) {
         return 1;
     }
+    
     begin -> web_link = argv[1];
     begin -> next = NULL;
     
-    int downloads = 0; 
-    while (downloads < 300) {
-   
-	char * p =  begin -> web_link; // p = FirstElement(q)
-     	//begin -> web_link  = NULL;
-  	RemoveFirstElement(begin); // q = RemoveFirstElement(q)
-	 
-	char * h = getWebPage(p);
-  	char * newlinks = GetLinksFromWebPage(h, p);
-   	printf("links on h:\n%s\n\n", newlinks);
-  	  
-    	int links = 0;
-    	int linkSize = 0;
-    	char * nextLine = NULL;
-    	while(newlinks) {
-      		nextLine = strchr(newlinks, '\n');
-      		if (nextLine) *nextLine = '\0';  // temporarily terminate the current line
-      		begin = insert_node(begin, newlinks);
-      		if (nextLine) *nextLine = '\n';
-      		newlinks = nextLine ? (nextLine+1) : NULL;
-   	} 
-   	print_list(begin); 
+    char *p =  begin -> web_link;
+    begin -> web_link  = NULL;
+ 
+    printf("link in p:\n %s \n", p);
+    
+    char * h = getWebPage(p);
+    char * newlinks = GetLinksFromWebPage(h, p);
+    printf("links on h:\n%s\n\n", newlinks);
+    
+    int links = 0;
+    int linkSize = 0;
+    char * nextLine = NULL;
+    while(newlinks) {
+      nextLine = strchr(newlinks, '\n');
+      if (nextLine) *nextLine = '\0';  // temporarily terminate the current line
+      //printf("Current Line=[%s]\n\n\n", newlinks);
+      begin = insert_node(begin, newlinks);
+      if (nextLine) *nextLine = '\n';
+      newlinks = nextLine ? (nextLine+1) : NULL;
+   } 
+   print_list(begin); 
 
 
 
