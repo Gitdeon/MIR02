@@ -362,37 +362,46 @@ int main(int argc, char *argv[])
 {   
     /* We need one argument */
     if( argc != 2 ) return 1;
+
     
-     /* Allocate memory for the link (needed bacause we might change it later on) ... */
+    /* Allocate memory for the link (needed bacause we might change it later on) ... */
     size_t linkLen = strlen(argv[1]);
     char *link = (char *)malloc(URL_BUFFER_SIZE*sizeof(char));
     strcpy(link, argv[1]);
     link[linkLen] = '\0';
-    
-    /* Create linked list */
-    typedef struct list {
-    	char * html_page;
-	struct list * next;
-    } q;
-
-    q * begin = NULL;
-    begin = malloc(sizeof(q));
-    if (begin == NULL) {
-        return 1;
+   
+    /*Download webpage at q*/
+    char * webpage = getWebPage(link);
+    char * q = GetLinksFromWebPage(webpage, link);
+    printf("All links without first line p links:\n%s\n", q);
+    int iterator = 0;
+    while (iterator <= 300) {
+       iterator++;
     }
-    
-    begin -> html_page = argv[1];
-    begin -> next = NULL;
-    
-    char *p =  begin -> html_page;
-    begin -> html_page = NULL;
- 
-    printf("htmlpage:\n %s \n", p);
-    
+    int LineSize = strcspn(q, "\n");
+    char * p = (char *)malloc(URL_BUFFER_SIZE*sizeof(char));
+    p  = strncpy(p, q, LineSize);
+    q = replace_str(q, p, "");
+    /*Print everything*/
+    printf("All links without first line p links:\n%s\n", q);
+    printf("First line p:%s", p);
+   
     char * h = getWebPage(p);
-    char * newlinks = GetLinksFromWebPage(h, p);
-    printf("htmlpage:\n %s \n", newlinks);
+    char * newlinks = GetLinksFromWebPage(h,p);
+    printf("All links without first line p links:\n%s\n", newlinks);
 
+    char * temp_q;
+    temp_q = q;
+    if((q = malloc(strlen(temp_q)+strlen(newlinks)+1)) != NULL){
+    	q[0] = '\0';   // ensures the memory is an empty string
+    	strcat(q, temp_q);
+    	strcat(q, newlinks);
+    } 
+    else {
+    	printf("malloc failed!\n");
+    }
+    printf("List: \n %s", q);
+    
     // haut_destroy(&parser);
         
     /* Release the memory allocated for myState */
