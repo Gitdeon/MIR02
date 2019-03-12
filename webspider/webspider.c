@@ -358,12 +358,26 @@ char *replace_str(char *str, char *orig, char *rep)
   return buffer;
 }
 
+	/*------------------------------------------------------*/
+	/*							*/
+	/*	     HOMEWORK ASSIGNMENT 3 BELOW	 	*/
+	/*							*/
+	/*------------------------------------------------------*/	
+
 /* Create linked list struct */
 typedef struct node {
     char * web_link;
     struct node * next;
 } q;
 
+bool search(q * visited, char * link) { 
+    q* current = visited;  // Initialize current 
+    while (current != NULL) { 
+        if (strcmp(current -> web_link, link) == 0) return true; 
+        current = current -> next; 
+    } 
+    return false;
+}
 /* Function to insert link at end of linked list */
 q * insert_node(q* begin, char * link) {
 	q * newnode = (q*)malloc(sizeof(q));
@@ -378,6 +392,7 @@ q * insert_node(q* begin, char * link) {
 	temp = begin;
 	while (temp -> next != NULL) temp = temp -> next;
 	temp -> next = newnode;
+	
 	return begin;
 }
 
@@ -413,57 +428,43 @@ int main(int argc, char *argv[])
     if( argc != 2 ) return 1;
     
      /* Allocate memory for all character pointers used later on */
-    char * p = (char *)malloc(sizeof(char));
+    char * p = (char *)malloc(URL_BUFFER_SIZE*sizeof(char));
     char * h = (char *)malloc(URL_BUFFER_SIZE*sizeof(char));
     char * newlinks = (char *)malloc(URL_BUFFER_SIZE*sizeof(char));
     char * nextLine = NULL;
-    char * links;
-    q * temp = (q*)malloc(sizeof(q));
+    char * links = (char *)malloc(URL_BUFFER_SIZE*sizeof(char));
  
     /* create head node for linked list and fill with the input link */
-    q * begin = NULL;
-    begin = (q*)malloc(sizeof(q));
+    q * begin = (q*)malloc(sizeof(q));
     if (begin == NULL) return 1;
     begin -> web_link = argv[1];
     begin -> next = NULL;
     
+    /* create head node for downloaded websites list */
+    q * visited = (q*)malloc(sizeof(q)); 
+    visited -> web_link = "begin";
+    visited -> next = NULL;
+
     int downloads = 0; 
     //begin crawling until termination
-    while (downloads < 5) { 
-	p = begin -> web_link; // p = FirstElement(q) 
-	
-	/* Remove first element from link list */
-	if (downloads > 0) {
-		temp = begin;
-   		begin = begin -> next;
-   		free(temp);
-	}
-	
-	h = getWebPage(p);
-  	newlinks = GetLinksFromWebPage(h, p);  
-	printf("\nFound the following weblinks: Adding them at the back of the queue...\n%s\n\n", newlinks);
-	/* Add links found on page to end of the linked list, one by one */
-	links = strtok(newlinks, "\n");
-   	do {
-      		insert_node(begin,links);
-   	}
-   	while (links = strtok(NULL, "\n"));
-
-	downloads++; 
+    while (downloads < 300) {
+	p = begin -> web_link; // p = FirstElement(q)
+	begin = RemoveFirstElement(begin);
+	if (search(visited,p) == 0) {
+		h = getWebPage(p);
+		downloads++;
+		newlinks = GetLinksFromWebPage(h, p);  
+		printf("\nFound the following weblinks: Adding them at the back of the queue...\n%s\n\n", newlinks);
+		/* Add links found on page to end of the linked list, one by one */
+		links = strtok(newlinks, "\n");
+	   	do {
+      			insert_node(begin,links);
+	   	}
+   		while (links = strtok(NULL, "\n"));
+		insert_node(visited, p); // add downloaded page to visited list
+	} 
     }
-    print_list(begin);
-
-
-
-
-
-    // haut_destroy(&parser);
-        
-    /* Release the memory allocated for myState */
-    /* Release the memory allocated for our data */
-    // if(webpage!=NULL) free(webpage);
-    // if(webLinks!=NULL) free(webLinks);
-    // free(link); 
-
+    printf("The following pages were downloaded and parsed: \n");
+    print_list(visited);	 
     return 0;
 }
